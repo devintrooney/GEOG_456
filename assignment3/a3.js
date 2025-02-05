@@ -1,4 +1,4 @@
-var oobCounts = 
+var districtBoundaries = 
 {
 "type": "FeatureCollection",
 "name": "a3",
