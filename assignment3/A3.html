@@ -46,26 +46,6 @@
         fillOpacity: 0.9
     };
 
-/* var map = L.map('map').setView(carolinaHall, 17);
-        
-var marker = L.marker(carolinaHall).bindPopup("<b>Carolina Hall</b>").addTo(map);
-
-L.circleMarker(carolinaHall,markerOptions).addTo(map);
-
-
-
-// L.geoJSON(centroids).addTo(map);
-var districtLON = centroids.features[0].geometry.coordinates[0]
-var districtLAT = centroids.features[0].geometry.coordinates[1]
-
-// in this line I am getting the lat and lon of the first feature in the array
-// I use .slice().reverse() to reverse the original [lon,lat] to [lan,lon] since leaflet uses data in [lat,lon] format
-var firstCentroid = centroids.features[0].geometry.coordinates.slice().reverse()
-
-// in this line I am making a circle marker for the first waypoint in the array. 
-L.circleMarker(firstCentroid,markerOptions).bindPopup(centroids.features[0].properties.note ).addTo(map);
-*/
-// This is using the method of pointToLayer from leaflet which iterates through every feature in the geojson 
 var cc = L.geoJSON(districtCentroids, {
     pointToLayer: function (feature, cc) {
         console.log(feature)

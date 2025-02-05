@@ -2,7 +2,7 @@
 "type": "FeatureCollection",
 "name": "waypoints",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-"features": [
+"features": [  //square bracket means array
 { "type": "Feature", "properties": { "y": 35.909959, "x": -79.050328, "z": 146.5, "t": "2024-01-19T16:29:19", "note": "hello I am waypoint 0" }, "geometry": { "type": "Point", "coordinates": [ -79.050328, 35.909959 ] } },
 { "type": "Feature", "properties": { "y": 35.909978, "x": -79.050279, "z": 145.5, "t": "2024-01-19T16:29:23", "note": "hello I am waypoint 1" }, "geometry": { "type": "Point", "coordinates": [ -79.050279, 35.909978 ] } },
 { "type": "Feature", "properties": { "y": 35.909964, "x": -79.050214, "z": 144.0, "t": "2024-01-19T16:29:26", "note": "hello I am waypoint 2" }, "geometry": { "type": "Point", "coordinates": [ -79.050214, 35.909964 ] } },
