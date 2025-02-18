@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devin Rooney Assignment 4 - GEOG_456</title>
+</head>
+<body>
+    <script src="data1.js"></script>
+    <script src="data2.js"></script>
+    <h1>Original data source: </h1> <a href = "https://www.chicagopolice.org/statistics-data/isr-data/"> Chicago Police Department Investigative Stop Reports</a><br></br>
+    <h1>Major data cleaning steps included: </h1>
+    <h2>(1)</h2> Removing officers who are in units assigned to the entire city. Often these were special task force officers such as citywide detectives. <br></br>
+    <h2>(2)</h2> Using fuzzy logic to geocode the stop locations. (Original data anonymized addresses by replacing the final two digits with XX.) <br></br> 
+    The first pass replaced all XXs with 0s and batch processed the geocoding with the tidygeocoder package in R. <br></br>
+    I then filtered the failed stop locations with more than 20 associated stops, and found plausible addresses using Google maps. <br></br>
+    <h2>(3)</h2> Extrapolating aggregated geographic administrative boundaries for individual officers using beat numbers to compare stop location and officer assignment.
+    <h2>(4)</h2> Subsetting to stops between 2017 and 2019 or between 2021 and 2023 because those were the relevant years to analyze changes related to CPD redistricting that took place in 2020. <br></br>
+
+    Quick note: my dataset was too large to commit to github using normal channels. So I removed most variables, and split it into two files. "data" is years 2017-2019. "data2" is years 2021-2023.
+</body>
+</html>
