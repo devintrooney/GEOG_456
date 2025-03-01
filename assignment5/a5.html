@@ -1,0 +1,128 @@
+<html>
+    <style>
+
+/* <!-- ************** THES LINES ARE NEW ***************** --> */
+
+    /* code from https://www.w3schools.com/howto/howto_js_rangeslider.asp */
+    
+    .slidecontainer {
+    width: 100%;
+    }
+
+    .slider {
+    -webkit-appearance: none;
+    width: 50%;
+    height: 25px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    }
+
+    .slider:hover {
+    opacity: 1;
+    }
+
+    .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #4CAF50;
+    cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #4CAF50;
+    cursor: pointer;
+    }
+
+    /* <!-- ******************************* --> */
+
+</style>
+
+    <head>
+        <title>Fruitless Searches by Officer 414368</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+        integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+        crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+        integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+        crossorigin=""></script>
+        <script src="./data/sp.geojson" ></script>
+
+    </head>
+    <style>
+        #mapid{ width: 900px; height: 500px; }
+    </style>
+
+
+    <body>
+
+    Fruitless Searches (With Dates) by CPD Officer 414368
+    <div class="slidecontainer">
+        <input type="range" min="1" max="43" value="1" class="slider" id="myRange">
+         Date: <span id="demo"></span>
+    </div>
+
+    <div id="mapid"></div>
+    
+ 
+
+    <script>  
+
+
+    var map = L.map('mapid').setView([41.878, -87.69], 13); // YOU CAN CHANGE THE ZOOM
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    
+
+    var mgIcon = L.icon({    // notice the L.icon which is a Leaflet object with properties
+        iconUrl: './data/magnifyingGlass.svg',   
+          // this points to a jpg image obtained from the internet
+        iconSize: [25,25], // size of the icon
+        popupAnchor: [0,0] // where the icon is located relative to the lat lon of the point. 
+        });
+
+   
+    var search = L.geoJSON(searchpoints.features[0], { // open just the first instance of the geojson; that is why I added the []
+        pointToLayer: function (feature, latlng) { 
+        return L.marker(latlng, {icon: mgIcon});}
+        }).addTo(map);
+    map.addLayer(search) 
+
+
+    
+ // **********  THIS SECTION IS WHERE MOST CHANGES ARE HAPPENING IN THE JS 
+
+    var slider = document.getElementById("myRange");
+    var output = document.getElementById("demo");
+
+    slider.oninput = function() { // in this example I am adding the oninput method after the slider element has been created. 
+          //alert(this.value); // example for debugging 
+        output.innerHTML = searchpoints.features[(this.value-1)].properties.CONTACT_DATE; // get the date value and assign it to the text
+        map.removeLayer(search);// remove the hurricane layer otherwise it will keep adding more and more elements
+        search = L.geoJSON(searchpoints.features.slice(0,this.value), // select the values from 0 to the slider input using the slice array method
+        {pointToLayer: function (feature, latlng) { 
+        return L.marker(latlng, {icon: mgIcon});}}); 
+        map.addLayer(search); 
+        }
+
+        window.onload = function() {
+            slider.value = 1;  
+    }; // I added this section to make sure that the slider goes back to the initial event after refreshing   
+    // end of script
+    </script>
+    </body>
+    <!-- ************************added this line since I did not pay for the icon ***************** -->
+    <div>Magnifying Glass icon made by <a href="http://www.freepik.com">Designed by Katemangostar / Freepik</a></div>
+          
+    
+    </html>
+
+
