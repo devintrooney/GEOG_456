@@ -1,0 +1,72 @@
+<html>
+    <head>
+        <title>Out of Bounds Searches</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+        <script src="update_report_1.js" ></script>
+        <script src="districts.js" ></script>
+    </head>
+    <body>
+   Searches by the officer with more than 100 searches who has the highest proportion of fruitless searches (ID: 414368)
+    <div id="mapid"></div>
+    
+    <style>
+        #mapid{ width: 900px; height: 500px; }
+    </style>
+    <script>  
+
+
+    var map = L.map('mapid').setView([41.85, -87.72], 10); // YOU CAN CHANGE THE ZOOM
+
+    // this line is creating the variable map by  initializing the L.map class (a Leaflet class) with the mapid element that we created before. setView is a method that can be applied to the class L.map : you can give it a latitude, longitude and a zoom.  The higher the value of the zoom, the finer the initial scale of the map. 
+    var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        })
+
+    var OSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    
+    var Boundaries = L.geoJSON(districtBoundaries, {
+        }).addTo(map); 
+     
+   // L.geoJSON(districtCentroids, {
+   //     }).addTo(map); 
+
+    var geojsonMarkerOptions = {
+        radius: 4,
+        fillColor: "#000080",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.9
+    };
+
+var cc = L.geoJSON(data, {
+    pointToLayer: function (feature, point) {
+        console.log(feature)
+        return L.circleMarker(point, geojsonMarkerOptions).bindPopup(feature.properties.SO_EMPLOYEE_ID);
+    }
+}).addTo(map);
+    //var n = 0;
+var baseLayers = {
+    "OpenStreetMap": OSM,
+    "ESRI": Esri_WorldImagery
+    };
+// this is an object with the vectors
+// the property or key is the text and the value is the variable holding the vectors
+var overlayMaps = {
+    "Districts": Boundaries,
+    "Centroids": cc
+};
+// This method will create the button for controlling layers
+var layerControl = L.control.layers(baseLayers,overlayMaps).addTo(map);
+    
+    // end of script
+    </script>
+    </body>
+</html>

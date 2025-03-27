@@ -1,0 +1,123 @@
+---
+title: "Analysing the response of CPD Officer Stop Patterns to Administrative Boundary Changes"
+author: "Devin Rooney"
+date: "2024-12-15"
+output:
+  html_document: 
+    theme: paper
+    toc: true
+    toc_float: true
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+
+## Introduction  
+
+This project analyzes spatial distribution and network connectivity of investigative stops by the Chicago Police Department (CPD) in the years 2017-2019 and 2021-2023. The CPD increase the number of police areas from 3 to 5 in 2020. The thrust of the project was to see how closely stop patterns follow the administrative boundaries, whether those patterns change in response to administrative re-structuring, and whether the network structure of CPD officers would change in response to that same restructuring.
+
+The findings were that (1) the boundaries for officers' stops continued to match the district level boundaries. (2) On average, officers' stop zones were smaller in the later time period. (3) two network-level centrality measures indicated decreased connectivity and one network-level centrality measure indicated increased connectivity.
+
+The patterns in officer stops are visualized below. Districts with higher levels of reported crime tended to show more officer boundary density throughout the district than those with lower levels of reported crime. That likely reflects higher spatial densities of officers on the street. Another note, the data includes stops performed outside the city boundaries, which can be seen in the officer stop boundaries that also spill over. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, global options, reading in data, warning = FALSE, message=FALSE}
+#ensure code folds
+knitr::opts_chunk$set(class.source = "foldable")
+#load libraries
+library(tidyverse)
+#library(igraph)
+#library(ggraph)
+library(sf)
+library(tmap)
+library(spdep)
+library(sfdep)
+#library(concaveman)
+#library(RColorBrewer)
+library(lubridate)
+# set maps to interactive
+tmap_mode(mode = "view")
+tmap_options(basemaps = NULL)
+# read in Beat Polygons
+#BEATS <- read_sf("data/PoliceBeats2024.geojson")
+# remove duplicate beats (one beat has three non-contiguous polygons that throw errors)
+# 
+# # CPD district boundaries
+DISTRICTS <- read_sf("DATA/PoliceDistricts.geojson")
+DISTRICTS <- DISTRICTS |> select(dist_num)
+
+#read in ISR data
+ISR_2021 <- read_csv("DATA/2021-ISR.csv")
+ISR_2022 <-  read_csv("data/ISR_2022_TEST.csv")
+ISR_2023 <- read_csv("DATA/2023-ISR.csv")
+
+#merge years
+ISR <- rbind(ISR_2021,
+             ISR_2022,
+             ISR_2023)
+
+rm(ISR_2021,
+   ISR_2022,
+   ISR_2023)
+```
+
+```{r}
+ISR <- ISR |>
+  select(c(CONTACT_CARD_ID, 
+          CPD_UNIT_NO,
+          DISTRICT,                      
+          BEAT,   
+          SUBMITTING_BEAT_CD,
+          RACE_CODE_CD,
+          SEARCH_CONTRABAND_FOUND_I
+          )
+        ) |>
+  filter(SEARCH_CONTRABAND_FOUND_I %in% c("Y", "N")) |>
+  mutate(DISTRICT = substr(BEAT, start = 1, stop = 2),
+         PO_DISTRICT = substr(SUBMITTING_BEAT_CD, start = 1, stop = 2),
+         SUBMITTING_BEAT_CD = substr(SUBMITTING_BEAT_CD, start = 1, stop = 4)) |>
+  mutate(
+    STOP_UNIT = paste0("0",DISTRICT),
+    PO_UNIT = paste0("0",PO_DISTRICT)) |> select(c(CONTACT_CARD_ID,DISTRICT, SEARCH_CONTRABAND_FOUND_I)) 
+  #  RACE = case_when(
+  #    RACE_CODE_CD %in% c("WHI","WHT") ~ "WHITE",
+  #    RACE_CODE_CD == "WWH" ~ "LATINO",
+  #    RACE_CODE_CD %in% c("BLK","WBH") ~ "BLACK",
+  #    RACE_CODE_CD %in% c("API", "I", "P", "U") ~ "OTHER")
+    #SEARCH_RESULT = case_when(
+    #  SEARCH_CONTRABAND_FOUND_I == "Y" ~ 1,
+    #  SEARCH_CONTRABAND_FOUND_I == "N" ~ 0
+    
+
+
+
+ISR_FL <- ISR |> filter(SEARCH_CONTRABAND_FOUND_I == "N") |>
+  group_by(DISTRICT) |>
+  summarize(FRUITLESS = n())
+
+ISR_FF <- ISR |> filter(SEARCH_CONTRABAND_FOUND_I == "Y") |>
+  group_by(DISTRICT) |>
+  summarize(FRUITFUL = n())
+
+#ISR <- ISR|> group_by(DISTRICT) |>
+ # summarize(HIT_RATE = mean(SEARCH_RESULT))
+ISR <- ISR_FF |> left_join(ISR_FL, by = join_by(DISTRICT), keep = FALSE)
+
+ ISR$DISTRICT <- as.numeric(ISR$DISTRICT) 
+ ISR <- ISR |> filter(DISTRICT < 32)
+ ISR$DISTRICT <- as.character(ISR$DISTRICT)
+ 
+ ISR <- ISR |> left_join(DISTRICTS, by = join_by(DISTRICT == dist_num))
+ 
+ ISR <- st_as_sf(ISR, crs = 4326)
+
+```
+
+
+```{r}
+temp <- temp |> select()
+```
+
